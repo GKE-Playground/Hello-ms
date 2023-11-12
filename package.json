@@ -9,7 +9,7 @@
     "lint:fix": "npx eslint 'src/**/*' 'integration-test/**/*' --fix",
     "prettier:fix": "prettier --write .",
     "build": "tsc -p tsconfig-build.json",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest -c integration-test/jest.config.json --detectOpenHandles",
+    "test": "NODE_EVN=test NODE_OPTIONS=--experimental-vm-modules jest -c integration-test/jest.config.json --detectOpenHandles",
     "dev": "nodemon"
   },
   "author": "",
