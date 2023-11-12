@@ -23,5 +23,5 @@ jobs:
     - name: Build and push Docker image
       run: |-
         gcloud auth configure-docker europe-west1-docker.pkg.dev --quiet
-        docker build -t $IMAGE_NAME:latest .
-        docker push europe-west1-docker.pkg.dev/${{ env.PROJECT_ID }}/gke-playground/$IMAGE_NAME:latest
+        docker build -t europe-west1-docker.pkg.dev/$PROJECT_ID/gke-playground/$IMAGE_NAME:latest .
+        docker push europe-west1-docker.pkg.dev/$PROJECT_ID/gke-playground/$IMAGE_NAME:latest
