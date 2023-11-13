@@ -36,10 +36,15 @@ jobs:
         gcloud auth configure-docker europe-west1-docker.pkg.dev --quiet
         docker build -t europe-west1-docker.pkg.dev/$PROJECT_ID/gke-playground/$IMAGE_NAME:latest .
         docker push europe-west1-docker.pkg.dev/$PROJECT_ID/gke-playground/$IMAGE_NAME:latest
+    
+    - name: get gke credentials
+      uses: 'google-github-actions/get-gke-credentials@v1'
+      with:
+        cluster_name: $GKE_CLUSTER
+        location: $REGION
 
     - name: Deploy to GKE
       run: |-
-        gcloud container clusters get-credentials $GKE_CLUSTER --region $REGION
         sed -i "s/GOOGLE_PROJECT/$GOOGLE_PROJECT/g" resources.yml
         sed -i "s/IMAGE_NAME/$IMAGE_NAME/g" resources.yml
         kubectl apply -f gke-deployment.yml
