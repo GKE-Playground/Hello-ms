@@ -40,8 +40,8 @@ jobs:
     - name: get gke credentials
       uses: 'google-github-actions/get-gke-credentials@v1'
       with:
-        cluster_name: $GKE_CLUSTER
-        location: $REGION
+        cluster_name: ${{ env.GKE_CLUSTE }}
+        location: ${{ env.REGION }}
 
     - name: Deploy to GKE
       run: |-
