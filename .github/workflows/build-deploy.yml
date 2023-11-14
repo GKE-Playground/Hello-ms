@@ -27,6 +27,4 @@ jobs:
         with:
           workload_identity_provider: ${{ secrets.WIF_ID }}
           service_account: ${{ secrets.SERVICE_ACCOUNT }}
-          token_format: 'access_token'
-          export_environment_variables: true
 
