@@ -34,7 +34,7 @@ jobs:
       - name: Automatic Tagging of Releases
         id: increment-git-tag
         run: |
-          bash ./scripts/git_update.sh -v major
+          bash ./scripts/git_update_tag.sh -v major
 
       - name: Build and push Docker image
         env:
@@ -53,8 +53,11 @@ jobs:
           location: ${{ env.REGION }}
 
       - name: Deploy to GKE
+        env:
+          GIT_TAG: ${{ steps.increment-git-tag.outputs.git-tag }}
         run: |-
           sed -i "s/PROJECT_ID/$PROJECT_ID/g" gke-deployment.yml
           sed -i "s/IMAGE_NAME/$IMAGE_NAME/g" gke-deployment.yml
           sed -i "s/MY_LABEL/$MY_LABEL/g" gke-deployment.yml
+          sed -i "s/GIT_TAG/$GIT_TAG/g" gke-deployment.yml
           kubectl apply -f gke-deployment.yml

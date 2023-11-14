@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: IMAGE_NAME
-        image: europe-west1-docker.pkg.dev/PROJECT_ID/gke-playground/IMAGE_NAME:latest
+        image: europe-west1-docker.pkg.dev/PROJECT_ID/gke-playground/IMAGE_NAME:GIT_TAG
         ports:
         - containerPort: 3000
