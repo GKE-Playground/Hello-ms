@@ -13,7 +13,7 @@ env:
 
 jobs:
   build-push-gcr:
-    name: Build and Push to GCP
+    name: Build and Push to GCPBuild and Push to GCP
     runs-on: ubuntu-latest
 
     permissions:

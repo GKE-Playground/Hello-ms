@@ -23,7 +23,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get("/", (_req: Request, res: Response) => {
-  res.send("hello world, i successfully deployed my first app on gke");
+  res.send("hello world, i successfully deployed my first app on gke with WIF auth");
 });
 
 app.use(function (_req: Request, _res: Response, next: NextFunction) {
