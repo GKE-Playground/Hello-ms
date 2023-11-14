@@ -9,8 +9,11 @@ while getopts v: flag; do
   esac
 done
 
-# read the current version from version.txt
-CURRENT_VERSION=$(cat version.txt)
+# read the current version from version.txt or set to v0.1.0 if not present
+CURRENT_VERSION=$(cat version.txt 2>/dev/null || echo "v0.1.0")
+
+# remove 'v' prefix
+CURRENT_VERSION=${CURRENT_VERSION#v}
 
 # replace . with space so can split into an array
 CURRENT_VERSION_PARTS=(${CURRENT_VERSION//./ })
@@ -31,8 +34,8 @@ else
   exit 1
 fi
 
-# create new version
-NEW_VERSION="$VNUM1.$VNUM2.$VNUM3"
+# create new version with 'v' prefix
+NEW_VERSION="v$VNUM1.$VNUM2.$VNUM3"
 echo "($VERSION) updating $CURRENT_VERSION to $NEW_VERSION"
 
 # store the new version into version.txt
