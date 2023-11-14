@@ -31,17 +31,20 @@ jobs:
         with:
           credentials_json: ${{ secrets.SERVICE_ACCOUNT_KEY }}
 
+      - name: Automatic Tagging of Releases
+        id: increment-git-tag
+        run: |
+          bash ./scripts/git_update.sh -v major
+
       - name: Build and push Docker image
+        env:
+          GIT_TAG: ${{ steps.increment-git-tag.outputs.git-tag }}
         run: |-
           gcloud auth configure-docker europe-west1-docker.pkg.dev --quiet
           docker build -t europe-west1-docker.pkg.dev/$PROJECT_ID/gke-playground/$IMAGE_NAME:latest .
+          docker build -t europe-west1-docker.pkg.dev/$PROJECT_ID/gke-playground/$IMAGE_NAME:$GIT_TAG .
           docker push europe-west1-docker.pkg.dev/$PROJECT_ID/gke-playground/$IMAGE_NAME:latest
-
-      - name: Generate random label
-        id: random-label
-        run: |
-          MY_LABEL=$(openssl rand -hex 6)
-          echo "MY_LABEL=${MY_LABEL}" >> $GITHUB_ENV
+          docker push europe-west1-docker.pkg.dev/$PROJECT_ID/gke-playground/$IMAGE_NAME:$GIT_TAG
 
       - name: Get GKE credentials
         uses: 'google-github-actions/get-gke-credentials@v1'

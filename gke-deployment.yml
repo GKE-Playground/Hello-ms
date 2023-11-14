@@ -10,7 +10,7 @@ spec:
   template:
     metadata:
       labels:
-        my-label: MY_LABEL
+        app: IMAGE_NAME
     spec:
       containers:
       - name: IMAGE_NAME
