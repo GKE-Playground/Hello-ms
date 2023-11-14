@@ -1,12 +1,12 @@
 name: Build and Push Docker Image to GCP
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
-env: 
+env:
   PROJECT_ID: ${{ secrets.PROJECT_ID }}
   IMAGE_NAME: hello-ms
-  GKE_CLUSTER: autopilot-cluster-1	
+  GKE_CLUSTER: autopilot-cluster-1
   REGION: europe-west1
   DEPLOYMENT_NAME: hello-ms
 
@@ -16,35 +16,40 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
 
-    - name: install gcloud cli
-      uses: google-github-actions/setup-gcloud@main
-      with:
-        service_account_key: ${{ secrets.SERVICE_ACCOUNT_KEY }}
-        project_id: ${{ secrets.PROJECT_ID }}
-        export_default_credentials: true
+      - name: Install gcloud cli
+        uses: google-github-actions/setup-gcloud@main
+        with:
+          service_account_key: ${{ secrets.SERVICE_ACCOUNT_KEY }}
+          project_id: ${{ secrets.PROJECT_ID }}
+          export_default_credentials: true
 
-    - name: authenticate with gcloud
-      uses: google-github-actions/auth@v1
-      with:
-        credentials_json: ${{ secrets.SERVICE_ACCOUNT_KEY }}
-    
-    - name: Build and push Docker image
-      run: |-
-        gcloud auth configure-docker europe-west1-docker.pkg.dev --quiet
-        docker build -t europe-west1-docker.pkg.dev/$PROJECT_ID/gke-playground/$IMAGE_NAME:latest .
-        docker push europe-west1-docker.pkg.dev/$PROJECT_ID/gke-playground/$IMAGE_NAME:latest
-    
-    - name: get gke credentials
-      uses: 'google-github-actions/get-gke-credentials@v1'
-      with:
-        cluster_name: ${{ env.GKE_CLUSTER }}
-        location: ${{ env.REGION }}
+      - name: Authenticate with gcloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.SERVICE_ACCOUNT_KEY }}
 
-    - name: Deploy to GKE
-      run: |-
-        sed -i "s/PROJECT_ID/$PROJECT_ID/g" gke-deployment.yml
-        sed -i "s/IMAGE_NAME/$IMAGE_NAME/g" gke-deployment.yml
-        kubectl apply -f gke-deployment.yml
+      - name: Build and push Docker image
+        run: |-
+          gcloud auth configure-docker europe-west1-docker.pkg.dev --quiet
+          docker build -t europe-west1-docker.pkg.dev/$PROJECT_ID/gke-playground/$IMAGE_NAME:latest .
+          docker push europe-west1-docker.pkg.dev/$PROJECT_ID/gke-playground/$IMAGE_NAME:latest
+
+      - name: Generate random label
+        id: random-label
+        run: echo "MY_LABEL=$(openssl rand -hex 6)" >> $GITHUB_ENV
+
+      - name: Get GKE credentials
+        uses: 'google-github-actions/get-gke-credentials@v1'
+        with:
+          cluster_name: ${{ env.GKE_CLUSTER }}
+          location: ${{ env.REGION }}
+
+      - name: Deploy to GKE
+        run: |-
+          sed -i "s/PROJECT_ID/$PROJECT_ID/g" gke-deployment.yml
+          sed -i "s/IMAGE_NAME/$IMAGE_NAME/g" gke-deployment.yml
+          sed -i "s/MY_LABEL/$MY_LABEL/g" gke-deployment.yml
+          kubectl apply -f gke-deployment.yml
