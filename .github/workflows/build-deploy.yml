@@ -2,11 +2,6 @@ name: Build and Push Docker Image to GCP
 on:
   workflow_dispatch:
 
-permissions:
-  id-token: write 
-  contents: read  
-
-
 env:
   PROJECT_ID: ${{ secrets.PROJECT_ID }}
   IMAGE_NAME: hello-ms
@@ -19,6 +14,10 @@ jobs:
     name: Build and Push to GCP
     runs-on: ubuntu-latest
 
+    permissions:
+      id-token: write 
+      contents: read  
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -28,6 +27,6 @@ jobs:
         with:
           workload_identity_provider: ${{ secrets.WIF_ID }}
           service_account: ${{ secrets.SERVICE_ACCOUNT }}
-          token_format: access_token
+          token_format: 'access_token'
           export_environment_variables: true
 
