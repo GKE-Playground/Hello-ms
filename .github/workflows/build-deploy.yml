@@ -39,7 +39,11 @@ jobs:
 
       - name: Generate random label
         id: random-label
-        run: echo "MY_LABEL=$(openssl rand -hex 6)" >> $GITHUB_ENV
+        run: |
+          MY_LABEL=$(openssl rand -hex 6)
+          echo "MY_LABEL=${MY_LABEL}" >> $GITHUB_ENV
+          echo "::set-env name=MY_LABEL::${MY_LABEL}"
+
 
       - name: Get GKE credentials
         uses: 'google-github-actions/get-gke-credentials@v1'
