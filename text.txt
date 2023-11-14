@@ -1,7 +1,8 @@
-name: Build and Push Docker Image to GCP
+name: Build,Push and Deploy to GKE
 on:
   push:
-    branches: [main]
+    branches:
+      - main
 
 env:
   PROJECT_ID: ${{ secrets.PROJECT_ID }}
@@ -12,33 +13,34 @@ env:
 
 jobs:
   build-push-gcr:
-    name: Build and Push to GCP
+    name: Build and Push to GCPBuild and Push to GCP
     runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write 
+      contents: read  
 
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Install gcloud cli
-        uses: google-github-actions/setup-gcloud@main
-        with:
-          service_account_key: ${{ secrets.SERVICE_ACCOUNT_KEY }}
-          project_id: ${{ secrets.PROJECT_ID }}
-          export_default_credentials: true
-
-      - name: Authenticate with gcloud
+      - name: Authenticate to WIF
         uses: google-github-actions/auth@v1
         with:
-          credentials_json: ${{ secrets.SERVICE_ACCOUNT_KEY }}
-
+          workload_identity_provider: projects/507085571061/locations/global/workloadIdentityPools/gke-pool-tung/providers/gke-playground-provider
+          service_account: github-actions@cst-pbag-aiml-test.iam.gserviceaccount.com
+          token_format: access_token
+          export_environment_variables: true
+    
       - name: Automatic Tagging of Releases
         id: increment-git-tag
         run: |
-          bash ./scripts/git_update_tag.sh -v major
+          bash ./scripts/git_update_tag.sh -v patch
 
       - name: Build and push Docker image
         env:
           GIT_TAG: ${{ steps.increment-git-tag.outputs.git-tag }}
+          CONTAINER_REGISTRY: europe-west1-docker.pkg.dev
         run: |-
           gcloud auth configure-docker europe-west1-docker.pkg.dev --quiet
           docker build -t europe-west1-docker.pkg.dev/$PROJECT_ID/gke-playground/$IMAGE_NAME:latest .
@@ -61,3 +63,4 @@ jobs:
           sed -i "s/MY_LABEL/$MY_LABEL/g" gke-deployment.yml
           sed -i "s/GIT_TAG/$GIT_TAG/g" gke-deployment.yml
           kubectl apply -f gke-deployment.yml
+
