@@ -11,6 +11,7 @@ spec:
     metadata:
       labels:
         app: IMAGE_NAME
+        my-label: MY_LABEL
     spec:
       containers:
       - name: IMAGE_NAME
