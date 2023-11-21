@@ -33,9 +33,6 @@ jobs:
           export_environment_variables: true
     
       - name: Increment git tag
-        id: increment-git-tag
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
         run: |
           bash ./scripts/git_update_tag.sh -v patch
 
